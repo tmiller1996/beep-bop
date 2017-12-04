@@ -1,24 +1,44 @@
 import pygame as pg
 
+from os import path
+
 
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 RED = (255, 50, 50)
 GREEN = (50, 255, 50)
 BLUE = (50, 50, 255)
+PURPLE = (255, 50, 255)
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
+
+PLAYER_WIDTH = 40
+PLAYER_HEIGHT = 60
+
+PLAYER_OPEN_IMG = path.join('data', 'player_open.bmp')
+PLAYER_IMG = path.join('data', 'player_open.bmp')
 
 FPS = 60
 
 
 class Player(pg.sprite.Sprite):
-    def __init__(self, width, height, color):
+    def __init__(self):
         super().__init__()
 
-        self.image = pg.Surface([width, height])
-        self.image.fill(color)
+        try:
+            self.player_img = pg.image.load(PLAYER_IMG)
+        except:
+            self.player_img = pg.Surface([PLAYER_WIDTH, PLAYER_HEIGHT])
+            self.player_img.fill(RED)
+
+        try:
+            self.player_open_img = pg.image.load(PLAYER_OPEN_IMG)
+        except:
+            self.player_open_img = pg.Surface([PLAYER_WIDTH, PLAYER_HEIGHT])
+            self.player_open_img.fill(PURPLE)
+
+        self.image = self.player_img
 
         self.rect = self.image.get_rect()
 
@@ -32,6 +52,7 @@ class Player(pg.sprite.Sprite):
 
         self.rect.x += self.vx
 
+        # horizontal collision
         hits = pg.sprite.spritecollide(self, self.level.platforms, False)
         for hit in hits:
             if self.vx > 0:
@@ -41,6 +62,7 @@ class Player(pg.sprite.Sprite):
 
         self.rect.y += self.vy
 
+        # vertical collision
         hits = pg.sprite.spritecollide(self, self.level.platforms, False)
         for hit in hits:
             if self.vy > 0:
@@ -49,6 +71,7 @@ class Player(pg.sprite.Sprite):
                 self.rect.top = hit.rect.bottom
 
             self.vy = 0
+            self.image = self.player_img
 
     def gravity(self):
         if self.vy == 0:
@@ -76,6 +99,10 @@ class Player(pg.sprite.Sprite):
 
     def stop(self):
         self.vx = 0
+
+    def scream(self):
+        self.image = self.player_open_img
+        self.jump()
 
 
 class Platform(pg.sprite.Sprite):
@@ -119,7 +146,7 @@ def main():
 
     pg.display.set_caption('Platformer')
 
-    player = Player(40, 60, RED)
+    player = Player()
 
     levels = [Level01(player)]
 
@@ -149,6 +176,8 @@ def main():
                     player.go_right()
                 if event.key == pg.K_UP:
                     player.jump()
+                if event.key == pg.K_s:
+                    player.scream()
 
             if event.type == pg.KEYUP:
                 if event.key == pg.K_LEFT and player.vx < 0:
