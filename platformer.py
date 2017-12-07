@@ -16,6 +16,8 @@ SCREEN_HEIGHT = 600
 PLAYER_WIDTH = 40
 PLAYER_HEIGHT = 60
 
+BASE_VX = 0
+
 PLAYER_OPEN_IMG = path.join('data', 'player_open.bmp')
 PLAYER_IMG = path.join('data', 'player_open.bmp')
 
@@ -42,7 +44,7 @@ class Player(pg.sprite.Sprite):
 
         self.rect = self.image.get_rect()
 
-        self.vx = 0
+        self.vx = BASE_VX
         self.vy = 0
 
         self.level = None
@@ -71,6 +73,7 @@ class Player(pg.sprite.Sprite):
                 self.rect.top = hit.rect.bottom
 
             self.vy = 0
+            # the original image is restored when the player lands on a platform
             self.image = self.player_img
 
     def gravity(self):
@@ -92,13 +95,13 @@ class Player(pg.sprite.Sprite):
             self.vy = -10
 
     def go_left(self):
-        self.vx = -6
+        self.vx = BASE_VX - 6
 
     def go_right(self):
-        self.vx = 6
+        self.vx = BASE_VX + 6
 
     def stop(self):
-        self.vx = 0
+        self.vx = BASE_VX
 
     def scream(self):
         self.image = self.player_open_img
@@ -128,6 +131,7 @@ class Level(object):
         self.enemies.update()
 
     def draw(self, screen):
+        # draw background image
         screen.fill(BLUE)
 
         self.platforms.draw(screen)
