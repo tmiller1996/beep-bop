@@ -19,7 +19,7 @@ PLAYER_HEIGHT = 60
 BASE_VX = 0
 
 PLAYER_OPEN_IMG = path.join('data', 'player_open.bmp')
-PLAYER_IMG = path.join('data', 'player_open.bmp')
+PLAYER_IMG = path.join('data', 'player.bmp')
 
 FPS = 60
 
@@ -28,17 +28,8 @@ class Player(pg.sprite.Sprite):
     def __init__(self):
         super().__init__()
 
-        try:
-            self.player_img = pg.image.load(PLAYER_IMG)
-        except:
-            self.player_img = pg.Surface([PLAYER_WIDTH, PLAYER_HEIGHT])
-            self.player_img.fill(RED)
-
-        try:
-            self.player_open_img = pg.image.load(PLAYER_OPEN_IMG)
-        except:
-            self.player_open_img = pg.Surface([PLAYER_WIDTH, PLAYER_HEIGHT])
-            self.player_open_img.fill(PURPLE)
+        self.player_img = pg.image.load(PLAYER_IMG)
+        self.player_open_img = pg.image.load(PLAYER_OPEN_IMG)
 
         self.image = self.player_img
 
