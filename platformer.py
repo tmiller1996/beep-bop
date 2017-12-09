@@ -179,6 +179,8 @@ class Level01(Level):
 def main():
     pygame.init()
 
+    # TODO read gameover.txt to string array (line by line)
+
     size = [SCREEN_WIDTH, SCREEN_HEIGHT]
     screen = display.set_mode(size)
 
@@ -249,6 +251,9 @@ def main():
             diff = SCROLL_LEFT - player.rect.left
             player.rect.left = SCROLL_LEFT
             levels[current_level].scroll_world(diff)
+
+        # TODO if player hits ground, game over
+        # add a restart button in the middle, with the text
 
         # go to next level if end of level is reached
         # TODO get rid of this, if the end is reached then the player reached nirvana

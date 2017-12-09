@@ -20,6 +20,7 @@ class Microphone(threading.Thread):
                 self.delegate(np.max(np.abs(data)))
             else:
                 self.delegate('no input')
-        with sd.InputStream(device = self.device, channels = self.channels, callback = callback, blocksize = self.blocksize, samplerate = self.samplerate):
+        with sd.InputStream(device = self.device, channels = self.channels, callback = callback,
+                            blocksize = self.blocksize, samplerate = self.samplerate):
             while True:
                 pass
