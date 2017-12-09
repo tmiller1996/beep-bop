@@ -157,7 +157,7 @@ class Level(object):
 
 
 def build_level(level):
-    pass # TODO build level with random gaps
+    pass # TODO build level with random gaps and height variations
 
 
 class Level01(Level):
@@ -254,6 +254,7 @@ def main():
             levels[current_level].scroll_world(diff)
 
         # go to next level if end of level is reached
+        # TODO get rid of this, if the end is reached then the player reached nirvana
         position = player.rect.x + levels[current_level].scroll
         if position < levels[current_level].limit:
             player.rect.x = SCROLL_LEFT
