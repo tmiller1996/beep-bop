@@ -5,7 +5,7 @@ import sounddevice as sd
 
 
 class Microphone(threading.Thread):
-    def __init__(self, delegate, device='', block_duration = 50):
+    def __init__(self, delegate, device=None, block_duration = 50):
         super().__init__(daemon=True)
         self.delegate = delegate
         self.device = device

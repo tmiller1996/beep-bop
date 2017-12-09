@@ -9,7 +9,7 @@ from pygame import image
 from pygame import sprite
 from pygame import display
 
-TITLE = 'The man who would never be what they wanted him to be'
+TITLE = 'Beep Bop'
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
@@ -188,7 +188,7 @@ def main():
 
     player = Player()
 
-    levels = [Level01(player), Level02(player)]
+    levels = [Level01(player)]
 
     current_level = 0
     player.level = levels[current_level]
@@ -214,7 +214,7 @@ def main():
                 player.scream()
             last_data = data
 
-    mic = microphone.Microphone(callback, device = 0)
+    mic = microphone.Microphone(callback)
     mic.start()
 
     while not done:
@@ -222,20 +222,19 @@ def main():
             if event.type == pygame.QUIT:
                 done = True
 
-            # TODO temp code, this should be replaced by the mic
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT:
-                    player.left()
-                if event.key == pygame.K_RIGHT:
-                    player.right()
-                if event.key == pygame.K_UP:
-                    player.jump()
-
-            if event.type == pygame.KEYUP:
-                if event.key == pygame.K_LEFT and player.vx < 0:
-                    player.stop()
-                if event.key == pygame.K_RIGHT and player.vx > 0:
-                    player.stop()
+            # if event.type == pygame.KEYDOWN:
+            #     if event.key == pygame.K_LEFT:
+            #         player.left()
+            #     if event.key == pygame.K_RIGHT:
+            #         player.right()
+            #     if event.key == pygame.K_UP:
+            #         player.jump()
+            #
+            # if event.type == pygame.KEYUP:
+            #     if event.key == pygame.K_LEFT and player.vx < 0:
+            #         player.stop()
+            #     if event.key == pygame.K_RIGHT and player.vx > 0:
+            #         player.stop()
 
         sprites.update()
 
