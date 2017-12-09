@@ -3,7 +3,7 @@ from os import path
 
 try:
     import pygame as pg
-except:
+except ImportError:
     print("Failed to import pygame")
 
 TITLE = 'The man who would never be what they wanted him to be'
