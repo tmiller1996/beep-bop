@@ -130,6 +130,7 @@ class Level(object):
 
         self.background_sprites = sprite.Group()
 
+        # TODO change this
         background = sprite.Sprite()
         background.image = image.load(BACKGROUND_IMG)
         background.rect = background.image.get_rect()
@@ -148,6 +149,7 @@ class Level(object):
 
     def scroll_world(self, scrollx):
         self.scroll += scrollx
+        # TODO if we do scrolling background, apply that here
         for platform in self.platforms:
             platform.rect.x += scrollx
         for enemy in self.enemies:
@@ -167,25 +169,6 @@ class Level01(Level):
         level = [[0, 500],
                  [210, 500],
                  [500, 500]]
-
-        for arr in level:
-            platform = Platform()
-            platform.rect.x = arr[0]
-            platform.rect.y = arr[1]
-            platform.player = self.player
-            self.platforms.add(platform)
-
-
-class Level02(Level):
-    def __init__(self, player):
-        Level.__init__(self, player)
-
-        self.limit = -1000
-
-        level = [[450, 570],
-                 [850, 420],
-                 [1000, 520],
-                 [1120, 280]]
 
         for arr in level:
             platform = Platform()
