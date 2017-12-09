@@ -177,7 +177,6 @@ class Level02(Level):
                  [1000, 520],
                  [1120, 280]]
 
-        # TODO move this to Level class
         for arr in level:
             platform = Platform()
             platform.rect.x = arr[0]
