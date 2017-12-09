@@ -1,8 +1,6 @@
 #!./usr/bin/env python3
 from os import path
-
 import sys
-
 import microphone
 import pygame
 from pygame import image
