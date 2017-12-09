@@ -1,20 +1,13 @@
 #!./usr/bin/env python3
 from os import path
 
-try:
-    import pygame as pg
-except ImportError:
-    print("Failed to import pygame")
+import pygame
+from pygame import image
+from pygame import sprite
+from pygame import display
+from pygame import event
 
 TITLE = 'The man who would never be what they wanted him to be'
-
-# color constants
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
-RED = (255, 50, 50)
-GREEN = (50, 255, 50)
-BLUE = (50, 50, 255)
-PURPLE = (255, 50, 255)
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
@@ -30,18 +23,18 @@ BASE_VX = 0
 
 PLAYER_OPEN_IMG = path.join('data', 'player_open.bmp')
 PLAYER_IMG = path.join('data', 'player.bmp')
-
 BACKGROUND_IMG = path.join('data', 'background.bmp')
+PLATFORM_IMG = path.join('data', 'platform.bmp')
 
 FPS = 60
 
 
-class Player(pg.sprite.Sprite):
+class Player(sprite.Sprite):
     def __init__(self):
         super().__init__()
 
-        self.player_img = pg.image.load(PLAYER_IMG)
-        self.player_open_img = pg.image.load(PLAYER_OPEN_IMG)
+        self.player_img = image.load(PLAYER_IMG)
+        self.player_open_img = image.load(PLAYER_OPEN_IMG)
 
         self.image = self.player_img
 
@@ -58,7 +51,7 @@ class Player(pg.sprite.Sprite):
         self.rect.x += self.vx
 
         # horizontal collision
-        hits = pg.sprite.spritecollide(self, self.level.platforms, False)
+        hits = sprite.spritecollide(self, self.level.platforms, False)
         for hit in hits:
             if self.vx > 0:
                 self.rect.right = hit.rect.left
@@ -68,7 +61,7 @@ class Player(pg.sprite.Sprite):
         self.rect.y += self.vy
 
         # vertical collision
-        hits = pg.sprite.spritecollide(self, self.level.platforms, False)
+        hits = sprite.spritecollide(self, self.level.platforms, False)
         for hit in hits:
             if self.vy > 0:
                 self.rect.bottom = hit.rect.top
@@ -93,7 +86,7 @@ class Player(pg.sprite.Sprite):
     def jump(self):
         # check if there is a platform beneath us
         self.rect.y += 2
-        hits = pg.sprite.spritecollide(self, self.level.platforms, False)
+        hits = sprite.spritecollide(self, self.level.platforms, False)
         self.rect.y -= 2
 
         if len(hits) > 0 or self.rect.bottom >= SCREEN_HEIGHT:
@@ -114,28 +107,26 @@ class Player(pg.sprite.Sprite):
 
 
 # TODO give Platform a constant width, height, and sprite
-class Platform(pg.sprite.Sprite):
-    def __init__(self, width, height):
+class Platform(sprite.Sprite):
+    def __init__(self):
         super().__init__()
 
-        self.image = pg.Surface([width, height])
-        self.image.fill(RED)
-
+        self.image = image.load(PLATFORM_IMG)
         self.rect = self.image.get_rect()
 
 
 class Level(object):
     def __init__(self, player):
-        self.platforms = pg.sprite.Group()
-        self.enemies = pg.sprite.Group()
+        self.platforms = sprite.Group()
+        self.enemies = sprite.Group()
         self.player = player
 
         self.limit = None
 
-        self.background_sprites = pg.sprite.Group()
+        self.background_sprites = sprite.Group()
 
-        background = pg.sprite.Sprite()
-        background.image = pg.image.load(BACKGROUND_IMG)
+        background = sprite.Sprite()
+        background.image = image.load(BACKGROUND_IMG)
         background.rect = background.image.get_rect()
         self.background_sprites.add(background)
 
@@ -164,16 +155,14 @@ class Level01(Level):
 
         self.limit = -1000
 
-
-        level = [[210, 70, 500, 500],
-                 [210, 70, 200, 400],
-                 [210, 70, 600, 300],
-                 ]
+        level = [[500, 500],
+                 [200, 400],
+                 [600, 300]]
 
         for arr in level:
-            platform = Platform(arr[0], arr[1])
-            platform.rect.x = arr[2]
-            platform.rect.y = arr[3]
+            platform = Platform()
+            platform.rect.x = arr[0]
+            platform.rect.y = arr[1]
             platform.player = self.player
             self.platforms.add(platform)
 
@@ -184,27 +173,27 @@ class Level02(Level):
 
         self.limit = -1000
 
-        level = [[210, 30, 450, 570],
-                 [210, 30, 850, 420],
-                 [210, 30, 1000, 520],
-                 [210, 30, 1120, 280]]
+        level = [[450, 570],
+                 [850, 420],
+                 [1000, 520],
+                 [1120, 280]]
 
         # TODO move this to Level class
         for arr in level:
-            platform = Platform(arr[0], arr[1])
-            platform.rect.x = arr[2]
-            platform.rect.y = arr[3]
+            platform = Platform()
+            platform.rect.x = arr[0]
+            platform.rect.y = arr[1]
             platform.player = self.player
             self.platforms.add(platform)
 
 
 def main():
-    pg.init()
+    pygame.init()
 
     size = [SCREEN_WIDTH, SCREEN_HEIGHT]
-    screen = pg.display.set_mode(size)
+    screen = display.set_mode(size)
 
-    pg.display.set_caption(TITLE)
+    display.set_caption(TITLE)
 
     player = Player()
 
@@ -213,7 +202,7 @@ def main():
     current_level = 0
     player.level = levels[current_level]
 
-    sprites = pg.sprite.Group()
+    sprites = sprite.Group()
 
     player.rect.x = PLAYER_START_X
     player.rect.y = PLAYER_START_Y
@@ -221,28 +210,28 @@ def main():
 
     done = False
 
-    clock = pg.time.Clock()
+    clock = pygame.time.Clock()
 
     while not done:
-        for event in pg.event.get():
-            if event.type == pg.QUIT:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
                 done = True
 
             # TODO temp code, this should be replaced by the mic
-            if event.type == pg.KEYDOWN:
-                if event.key == pg.K_LEFT:
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT:
                     player.left()
-                if event.key == pg.K_RIGHT:
+                if event.key == pygame.K_RIGHT:
                     player.right()
-                if event.key == pg.K_UP:
+                if event.key == pygame.K_UP:
                     player.jump()
-                if event.key == pg.K_s:
+                if event.key == pygame.K_s:
                     player.scream()
 
-            if event.type == pg.KEYUP:
-                if event.key == pg.K_LEFT and player.vx < 0:
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_LEFT and player.vx < 0:
                     player.stop()
-                if event.key == pg.K_RIGHT and player.vx > 0:
+                if event.key == pygame.K_RIGHT and player.vx > 0:
                     player.stop()
 
         sprites.update()
@@ -277,9 +266,10 @@ def main():
         clock.tick(FPS)
 
         # flip-a-roo
-        pg.display.flip()
+        display.flip()
 
-    pg.quit()
+    pygame.quit()
+
 
 if __name__ == "__main__":
     main()
