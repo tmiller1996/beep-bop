@@ -1,11 +1,13 @@
 #!./usr/bin/env python3
 from os import path
 
+import sys
+
+import microphone
 import pygame
 from pygame import image
 from pygame import sprite
 from pygame import display
-from pygame import event
 
 TITLE = 'The man who would never be what they wanted him to be'
 
@@ -19,7 +21,7 @@ PLAYER_HEIGHT = 60
 PLAYER_START_X = 340
 PLAYER_START_Y = SCREEN_HEIGHT - PLAYER_HEIGHT
 
-BASE_VX = 0
+BASE_VX = 8
 
 PLAYER_OPEN_IMG = path.join('data', 'player_open.bmp')
 PLAYER_IMG = path.join('data', 'player.bmp')
@@ -210,6 +212,20 @@ def main():
 
     clock = pygame.time.Clock()
 
+    last_data = float(sys.float_info.max)
+
+    def callback(data):
+        nonlocal last_data
+        if isinstance(data, str):
+            print(data)
+        else:
+            if data > last_data * 7:
+                player.scream()
+            last_data = data
+
+    mic = microphone.Microphone(callback, device = 0)
+    mic.start()
+
     while not done:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -223,8 +239,6 @@ def main():
                     player.right()
                 if event.key == pygame.K_UP:
                     player.jump()
-                if event.key == pygame.K_s:
-                    player.scream()
 
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_LEFT and player.vx < 0:
