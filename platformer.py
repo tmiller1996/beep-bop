@@ -31,6 +31,8 @@ BASE_VX = 0
 PLAYER_OPEN_IMG = path.join('data', 'player_open.bmp')
 PLAYER_IMG = path.join('data', 'player.bmp')
 
+BACKGROUND_IMG = path.join('data', 'background.bmp')
+
 FPS = 60
 
 
@@ -129,7 +131,14 @@ class Level(object):
         self.player = player
 
         self.limit = None
-        self.background = None
+
+        self.background_sprites = pg.sprite.Group()
+
+        background = pg.sprite.Sprite()
+        background.image = pg.image.load(BACKGROUND_IMG)
+        background.rect = background.image.get_rect()
+        self.background_sprites.add(background)
+
         self.scroll = 0
 
     def update(self):
@@ -137,10 +146,7 @@ class Level(object):
         self.enemies.update()
 
     def draw(self, screen):
-        # draw background image
-        # TODO draw a nice background
-        screen.fill(BLUE)
-
+        self.background_sprites.draw(screen)
         self.platforms.draw(screen)
         self.enemies.draw(screen)
 
@@ -158,6 +164,7 @@ class Level01(Level):
 
         self.limit = -1000
 
+
         level = [[210, 70, 500, 500],
                  [210, 70, 200, 400],
                  [210, 70, 600, 300],
@@ -171,7 +178,7 @@ class Level01(Level):
             self.platforms.add(platform)
 
 
-class Level_02(Level):
+class Level02(Level):
     def __init__(self, player):
         Level.__init__(self, player)
 
@@ -201,7 +208,7 @@ def main():
 
     player = Player()
 
-    levels = [Level01(player),]
+    levels = [Level01(player), Level02(player)]
 
     current_level = 0
     player.level = levels[current_level]
