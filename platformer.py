@@ -18,10 +18,14 @@ SCROLL_LEFT = 120
 
 PLAYER_WIDTH = 40
 PLAYER_HEIGHT = 60
-PLAYER_START_X = 340
-PLAYER_START_Y = SCREEN_HEIGHT - PLAYER_HEIGHT
+PLAYER_START_X = 0
+PLAYER_START_Y = 500 - PLAYER_HEIGHT
 
 BASE_VX = 8
+MOVE_VX = 6
+JUMP_VY = 6
+
+VOICE_CONSTANT = 6
 
 PLAYER_OPEN_IMG = path.join('data', 'player_open.bmp')
 PLAYER_IMG = path.join('data', 'player.bmp')
@@ -92,13 +96,13 @@ class Player(sprite.Sprite):
         self.rect.y -= 2
 
         if len(hits) > 0 or self.rect.bottom >= SCREEN_HEIGHT:
-            self.vy = -10
+            self.vy = -JUMP_VY
 
     def left(self):
-        self.vx = BASE_VX - 6
+        self.vx = BASE_VX - MOVE_VX
 
     def right(self):
-        self.vx = BASE_VX + 6
+        self.vx = BASE_VX + MOVE_VX
 
     def stop(self):
         self.vx = BASE_VX
@@ -150,15 +154,19 @@ class Level(object):
             enemy.rect.x += scrollx
 
 
+def build_level(level):
+    pass # TODO build level with random gaps
+
+
 class Level01(Level):
     def __init__(self, player):
         Level.__init__(self, player)
 
         self.limit = -1000
 
-        level = [[500, 500],
-                 [200, 400],
-                 [600, 300]]
+        level = [[0, 500],
+                 [210, 500],
+                 [500, 500]]
 
         for arr in level:
             platform = Platform()
@@ -219,7 +227,7 @@ def main():
         if isinstance(data, str):
             print(data)
         else:
-            if data > last_data * 7:
+            if data > last_data * VOICE_CONSTANT:
                 player.scream()
             last_data = data
 
