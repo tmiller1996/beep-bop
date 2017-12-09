@@ -106,7 +106,6 @@ class Player(sprite.Sprite):
         self.jump()
 
 
-# TODO give Platform a constant width, height, and sprite
 class Platform(sprite.Sprite):
     def __init__(self):
         super().__init__()
