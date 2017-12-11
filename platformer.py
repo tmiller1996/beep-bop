@@ -209,7 +209,7 @@ class Level(object):
         for enemy in self.enemies:
             enemy.rect.x += scrollx
 
-    def add_platform(self, x, y):
+    def add_platform(self, x, y) -> None:
         platform = Platform()
         platform.rect.x = x
         platform.rect.y = y
@@ -217,7 +217,7 @@ class Level(object):
         self.platforms.add(platform)
 
 
-def build_level(level):
+def build_level(level: Level) -> None:
     # TODO build level with random gaps and height variations
     # but for right now we'll just place two platforms and a gap, 10 times
     i = 0
@@ -228,7 +228,7 @@ def build_level(level):
     level.limit = -5000
 
 
-def main():
+def main() -> None:
     pygame.init()
 
     random.seed()
