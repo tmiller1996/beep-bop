@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from os import path
+import os
 import sys
 import random
 import microphone
@@ -40,6 +41,11 @@ NIRVANA_TXT = path.join('data', 'nirvana.txt')
 FPS = 60
 
 
+def restart():
+    python = sys.executable
+    os.execl(python, python, *sys.argv)
+
+
 def gameover_msg():
     """Grab a random line from gameover.txt"""
     try:
@@ -65,7 +71,7 @@ def gameover_surface():
     font = pygame.font.SysFont('monospace', 33, bold=True)
     gameover_label = font.render('Game over', 1, (255, 50, 255))
     flavor_label = font.render(gameover_msg(), 1, (255, 50, 255))
-    keypress_label = font.render('Press any key to quit', 1, (255, 50, 255))
+    keypress_label = font.render('Press any key to restart', 1, (255, 50, 255))
     surface = pygame.Surface([500, 300])
     surface.fill((50, 50, 255))
     surface.blit(gameover_label,
@@ -85,7 +91,7 @@ def nirvana_surface():
     font = pygame.font.SysFont('monospace', 33, bold=True)
     enlightenment_label = font.render('Enlightenment', 1, (255, 50, 255))
     flavor_label = font.render(nirvana_msg(), 1, (255, 50, 255))
-    keypress_label = font.render('Press any key to quit', 1, (255, 50, 255))
+    keypress_label = font.render('Press any key to restart', 1, (255, 50, 255))
     surface = pygame.Surface([500, 300])
     surface.fill((50, 50, 255))
     surface.blit(enlightenment_label,
@@ -276,7 +282,7 @@ def main() -> None:
                 done = True
             if event.type == pygame.KEYUP:
                 if gameover is not None or nirvana is not None:
-                    exit(0)
+                    restart() # lol
 
         sprites.update()
 
