@@ -34,6 +34,7 @@ PLAYER_OPEN_IMG = path.join('data', 'playerbrennusjumping.bmp')
 PLAYER_IMG = path.join('data', 'playerbrennus.bmp')
 BACKGROUND_IMG = path.join('data', 'background.bmp')
 PLATFORM_IMG = path.join('data', 'platform.bmp')
+WINSCREEN_IMG = path.join('data', 'winscreen.bmp')
 
 GAMEOVER_TXT = path.join('data', 'gameover.txt')
 NIRVANA_TXT = path.join('data', 'nirvana.txt')
@@ -92,8 +93,7 @@ def nirvana_surface():
     enlightenment_label = font.render('Enlightenment', 1, (255, 50, 255))
     flavor_label = font.render(nirvana_msg(), 1, (255, 50, 255))
     keypress_label = font.render('Press any key to restart', 1, (255, 50, 255))
-    surface = pygame.Surface([500, 300])
-    surface.fill((50, 50, 255))
+    surface = image.load(WINSCREEN_IMG)
     surface.blit(enlightenment_label,
                           ((surface.get_width() - enlightenment_label.get_width()) / 2,
                            (surface.get_height() - enlightenment_label.get_height() - flavor_label.get_height() * 2) / 2))
