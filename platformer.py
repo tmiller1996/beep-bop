@@ -30,8 +30,8 @@ JUMP_VY = 7
 
 VOICE_CONSTANT = 5.2
 
-PLAYER_OPEN_IMG = path.join('data', 'playerbrennusjumping.bmp')
-PLAYER_IMG = path.join('data', 'playerbrennus.bmp')
+PLAYER_JUMPING_IMG = path.join('data', 'player_jumping.bmp')
+PLAYER_IMG = path.join('data', 'player.bmp')
 BACKGROUND_IMG = path.join('data', 'background.bmp')
 PLATFORM_IMG = path.join('data', 'platform.bmp')
 WINSCREEN_IMG = path.join('data', 'winscreen.bmp')
@@ -111,7 +111,7 @@ class Player(sprite.Sprite):
         super().__init__()
 
         self.player_img = image.load(PLAYER_IMG)
-        self.player_open_img = image.load(PLAYER_OPEN_IMG)
+        self.player_jumping_img = image.load(PLAYER_JUMPING_IMG)
 
         self.image = self.player_img
 
@@ -179,7 +179,7 @@ class Player(sprite.Sprite):
         self.vx = BASE_VX
 
     def scream(self):
-        self.image = self.player_open_img
+        self.image = self.player_jumping_img
         self.jump()
 
 
