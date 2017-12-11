@@ -48,18 +48,18 @@ def gameover_surface():
     gameover_label = font.render('Game over', 1, (255, 50, 255))
     flavor_label = font.render(gameover_msg(), 1, (255, 50, 255))
     keypress_label = font.render('Press any key to restart', 1, (255, 50, 255))
-    gameover_surface = pygame.Surface([500, 300])
-    gameover_surface.fill((50, 50, 255))
-    gameover_surface.blit(gameover_label,
-                          ((gameover_surface.get_width() - gameover_label.get_width()) / 2,
-                           (gameover_surface.get_height() - gameover_label.get_height() - flavor_label.get_height() * 2) / 2))
-    gameover_surface.blit(flavor_label,
-                          ((gameover_surface.get_width() - flavor_label.get_width()) / 2,
-                           (gameover_surface.get_height() - flavor_label.get_height()) / 2))
-    gameover_surface.blit(keypress_label,
-                          ((gameover_surface.get_width() - keypress_label.get_width()) / 2,
-                           (gameover_surface.get_height() - keypress_label.get_height() + flavor_label.get_height() * 2) / 2))
-    return gameover_surface
+    surface = pygame.Surface([500, 300])
+    surface.fill((50, 50, 255))
+    surface.blit(gameover_label,
+                          ((surface.get_width() - gameover_label.get_width()) / 2,
+                           (surface.get_height() - gameover_label.get_height() - flavor_label.get_height() * 2) / 2))
+    surface.blit(flavor_label,
+                          ((surface.get_width() - flavor_label.get_width()) / 2,
+                           (surface.get_height() - flavor_label.get_height()) / 2))
+    surface.blit(keypress_label,
+                          ((surface.get_width() - keypress_label.get_width()) / 2,
+                           (surface.get_height() - keypress_label.get_height() + flavor_label.get_height() * 2) / 2))
+    return surface
 
 
 class Player(sprite.Sprite):
@@ -152,9 +152,7 @@ class Level(object):
         self.platforms = sprite.Group()
         self.enemies = sprite.Group()
         self.player = player
-
         self.limit = -1000
-
         self.scroll = 0
 
     def update(self):
