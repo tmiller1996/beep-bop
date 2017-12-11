@@ -19,7 +19,7 @@ SCROLL_LEFT = 120
 PLAYER_WIDTH = 40
 PLAYER_HEIGHT = 60
 PLAYER_START_X = 0
-PLAYER_START_Y = 500 - PLAYER_HEIGHT
+PLAYER_START_Y = 420
 
 PLATFORM_WIDTH = 210
 PLATFORM_HEIGHT = 70
@@ -30,8 +30,8 @@ JUMP_VY = 7
 
 VOICE_CONSTANT = 5.2
 
-PLAYER_OPEN_IMG = path.join('data', 'player_open.bmp')
-PLAYER_IMG = path.join('data', 'player.bmp')
+PLAYER_OPEN_IMG = path.join('data', 'playerbrennusjumping.bmp')
+PLAYER_IMG = path.join('data', 'playerbrennus.bmp')
 BACKGROUND_IMG = path.join('data', 'background.bmp')
 PLATFORM_IMG = path.join('data', 'platform.bmp')
 
