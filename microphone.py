@@ -45,7 +45,10 @@ if __name__ == '__main__':
                         action='store_true', help='show list of audio devices and exit')
     args = parser.parse_args()
     if args.list_devices:
-        print(sd.query_devices())
+        if any(sd.query_devices()):
+            print(sd.query_devices())
+        else:
+            print('None listeds')
         parser.exit(0)
     else:
         print('nothing to do')
