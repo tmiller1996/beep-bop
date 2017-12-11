@@ -4,7 +4,10 @@ import sounddevice as sd
 
 
 class Microphone(threading.Thread):
+    """A listening device"""
+
     def __init__(self, device = None, block_duration = 50, error_callback = None):
+        """Create a new Microphone object"""
         super().__init__(daemon=True)
         self.device = device
         self.samplerate = sd.query_devices(device, 'input')['default_samplerate']
@@ -14,16 +17,17 @@ class Microphone(threading.Thread):
         self.error_callback = error_callback
 
     def add_callback(self, callback):
+        """Add a callback to the microphone"""
         self.callbacks.append(callback)
 
     def run(self):
-        # sounddevice callback
+        """Run the Microphone thread"""
         def sd_callback(data, frame, time, status):
             if status:
                 if self.error_callback is not None:
                     self.error_callback(status)
             if any(data):
-                volume = np.max(np.abs(data))
+                volume = np.max(np.abs(data)) # this is a very rough approximation of volume, there's not really a unit or anything
                 pitch = None # TODO get pitch from data
                 for callback in self.callbacks:
                     callback(volume, pitch)

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from os import path
 import sys
+import random
 import microphone
 import pygame
 from pygame import image
@@ -30,7 +31,35 @@ PLAYER_IMG = path.join('data', 'player.bmp')
 BACKGROUND_IMG = path.join('data', 'background.bmp')
 PLATFORM_IMG = path.join('data', 'platform.bmp')
 
+GAMEOVER_TXT = path.join('data', 'gameover.txt')
+
 FPS = 60
+
+
+def gameover_msg():
+    """Grab a random line from gameover.txt"""
+    lines = tuple(open(GAMEOVER_TXT, 'r'))
+    lines = map(lambda line: line[:-1], lines)
+    return random.choice(list(lines))
+
+
+def gameover_surface():
+    font = pygame.font.SysFont('monospace', 33, bold=True)
+    gameover_label = font.render('Game over', 1, (255, 50, 255))
+    flavor_label = font.render(gameover_msg(), 1, (255, 50, 255))
+    keypress_label = font.render('Press any key to restart', 1, (255, 50, 255))
+    gameover_surface = pygame.Surface([500, 300])
+    gameover_surface.fill((50, 50, 255))
+    gameover_surface.blit(gameover_label,
+                          ((gameover_surface.get_width() - gameover_label.get_width()) / 2,
+                           (gameover_surface.get_height() - gameover_label.get_height() - flavor_label.get_height() * 2) / 2))
+    gameover_surface.blit(flavor_label,
+                          ((gameover_surface.get_width() - flavor_label.get_width()) / 2,
+                           (gameover_surface.get_height() - flavor_label.get_height()) / 2))
+    gameover_surface.blit(keypress_label,
+                          ((gameover_surface.get_width() - keypress_label.get_width()) / 2,
+                           (gameover_surface.get_height() - keypress_label.get_height() + flavor_label.get_height() * 2) / 2))
+    return gameover_surface
 
 
 class Player(sprite.Sprite):
@@ -124,15 +153,7 @@ class Level(object):
         self.enemies = sprite.Group()
         self.player = player
 
-        self.limit = None
-
-        self.background_sprites = sprite.Group()
-
-        # TODO change this
-        background = sprite.Sprite()
-        background.image = image.load(BACKGROUND_IMG)
-        background.rect = background.image.get_rect()
-        self.background_sprites.add(background)
+        self.limit = -1000
 
         self.scroll = 0
 
@@ -141,7 +162,6 @@ class Level(object):
         self.enemies.update()
 
     def draw(self, screen):
-        self.background_sprites.draw(screen)
         self.platforms.draw(screen)
         self.enemies.draw(screen)
 
@@ -162,8 +182,6 @@ class Level01(Level):
     def __init__(self, player):
         Level.__init__(self, player)
 
-        self.limit = -1000
-
         level = [[0, 500],
                  [210, 500],
                  [500, 500]]
@@ -179,15 +197,16 @@ class Level01(Level):
 def main():
     pygame.init()
 
-    # TODO read gameover.txt to string array (line by line)
-
     size = [SCREEN_WIDTH, SCREEN_HEIGHT]
     screen = display.set_mode(size)
 
     display.set_caption(TITLE)
 
+    background = image.load(BACKGROUND_IMG)
+
     player = Player()
 
+    # TODO do away with these Levels, we'll just have one Level that ends after... a while
     levels = [Level01(player)]
 
     current_level = 0
@@ -198,8 +217,6 @@ def main():
     player.rect.x = PLAYER_START_X
     player.rect.y = PLAYER_START_Y
     sprites.add(player)
-
-    done = False
 
     clock = pygame.time.Clock()
 
@@ -215,24 +232,16 @@ def main():
     mic.add_callback(mic_callback)
     mic.start()
 
+    done = False
+    gameover = None
+
     while not done:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 done = True
-
-            # if event.type == pygame.KEYDOWN:
-            #     if event.key == pygame.K_LEFT:
-            #         player.left()
-            #     if event.key == pygame.K_RIGHT:
-            #         player.right()
-            #     if event.key == pygame.K_UP:
-            #         player.jump()
-            #
-            # if event.type == pygame.KEYUP:
-            #     if event.key == pygame.K_LEFT and player.vx < 0:
-            #         player.stop()
-            #     if event.key == pygame.K_RIGHT and player.vx > 0:
-            #         player.stop()
+            if event.type == pygame.KEYUP:
+                gameover = None
+                # TODO create a new level, restart the users position
 
         sprites.update()
 
@@ -251,7 +260,9 @@ def main():
             levels[current_level].scroll_world(diff)
 
         # TODO if player hits ground, game over
-        # add a restart button in the middle, with the text
+        # TODO add a restart button in the middle, with the text
+        if player.rect.y + player.rect.height == SCREEN_HEIGHT:
+            gameover = gameover_surface()
 
         # go to next level if end of level is reached
         # TODO get rid of this, if the end is reached then the player reached nirvana
@@ -263,8 +274,13 @@ def main():
                 player.level = levels[current_level]
 
         # render
+        screen.blit(background, (0, 0))
         levels[current_level].draw(screen)
         sprites.draw(screen)
+        if gameover is not None:
+            screen.blit(gameover,
+                        ((screen.get_width() - gameover.get_width()) / 2,
+                         (screen.get_height()- gameover.get_height()) / 2))
 
         # limit FPS
         clock.tick(FPS)
