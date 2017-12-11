@@ -28,7 +28,7 @@ BASE_VX = 8
 MOVE_VX = 6
 JUMP_VY = 7
 
-VOICE_CONSTANT = 6
+VOICE_CONSTANT = 5.2
 
 PLAYER_OPEN_IMG = path.join('data', 'player_open.bmp')
 PLAYER_IMG = path.join('data', 'player.bmp')
