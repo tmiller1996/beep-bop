@@ -20,6 +20,9 @@ PLAYER_HEIGHT = 60
 PLAYER_START_X = 0
 PLAYER_START_Y = 500 - PLAYER_HEIGHT
 
+PLATFORM_WIDTH = 210
+PLATFORM_HEIGHT = 70
+
 BASE_VX = 8
 MOVE_VX = 6
 JUMP_VY = 6
@@ -32,27 +35,62 @@ BACKGROUND_IMG = path.join('data', 'background.bmp')
 PLATFORM_IMG = path.join('data', 'platform.bmp')
 
 GAMEOVER_TXT = path.join('data', 'gameover.txt')
+NIRVANA_TXT = path.join('data', 'nirvana.txt')
 
 FPS = 60
 
 
 def gameover_msg():
     """Grab a random line from gameover.txt"""
-    lines = tuple(open(GAMEOVER_TXT, 'r'))
-    lines = map(lambda line: line[:-1], lines)
-    return random.choice(list(lines))
+    try:
+        lines = tuple(open(GAMEOVER_TXT, 'r'))
+        lines = map(lambda line: line[:-1], lines)
+        return random.choice(list(lines))
+    except FileNotFoundError as fnfe:
+        print(str(fnfe))
+
+
+def nirvana_msg():
+    """Grab a random line from nirvana.txt"""
+    try:
+        lines = tuple(open(NIRVANA_TXT, 'r'))
+        lines = map(lambda line: line[-1], lines)
+        return random.choice(list(lines))
+    except FileNotFoundError as fnfe:
+        print(str(fnfe))
 
 
 def gameover_surface():
+    """Construct a surface for the Gameover display"""
     font = pygame.font.SysFont('monospace', 33, bold=True)
     gameover_label = font.render('Game over', 1, (255, 50, 255))
     flavor_label = font.render(gameover_msg(), 1, (255, 50, 255))
-    keypress_label = font.render('Press any key to restart', 1, (255, 50, 255))
+    keypress_label = font.render('Press any key to quit', 1, (255, 50, 255))
     surface = pygame.Surface([500, 300])
     surface.fill((50, 50, 255))
     surface.blit(gameover_label,
                           ((surface.get_width() - gameover_label.get_width()) / 2,
                            (surface.get_height() - gameover_label.get_height() - flavor_label.get_height() * 2) / 2))
+    surface.blit(flavor_label,
+                          ((surface.get_width() - flavor_label.get_width()) / 2,
+                           (surface.get_height() - flavor_label.get_height()) / 2))
+    surface.blit(keypress_label,
+                          ((surface.get_width() - keypress_label.get_width()) / 2,
+                           (surface.get_height() - keypress_label.get_height() + flavor_label.get_height() * 2) / 2))
+    return surface
+
+
+def nirvana_surface():
+    """Construct a surface for the nirvana display"""
+    font = pygame.font.SysFont('monospace', 33, bold=True)
+    enlightenment_label = font.render('Enlightenment', 1, (255, 50, 255))
+    flavor_label = font.render(nirvana_msg(), 1, (255, 50, 255))
+    keypress_label = font.render('Press any key to quit', 1, (255, 50, 255))
+    surface = pygame.Surface([500, 300])
+    surface.fill((50, 50, 255))
+    surface.blit(enlightenment_label,
+                          ((surface.get_width() - enlightenment_label.get_width()) / 2,
+                           (surface.get_height() - enlightenment_label.get_height() - flavor_label.get_height() * 2) / 2))
     surface.blit(flavor_label,
                           ((surface.get_width() - flavor_label.get_width()) / 2,
                            (surface.get_height() - flavor_label.get_height()) / 2))
@@ -142,12 +180,12 @@ class Player(sprite.Sprite):
 class Platform(sprite.Sprite):
     def __init__(self):
         super().__init__()
-
         self.image = image.load(PLATFORM_IMG)
         self.rect = self.image.get_rect()
 
 
 class Level(object):
+    """A level, with platforms and an ending (ish)"""
     def __init__(self, player):
         self.platforms = sprite.Group()
         self.enemies = sprite.Group()
@@ -171,25 +209,23 @@ class Level(object):
         for enemy in self.enemies:
             enemy.rect.x += scrollx
 
+    def add_platform(self, x, y):
+        platform = Platform()
+        platform.rect.x = x
+        platform.rect.y = y
+        platform.player = self.player
+        self.platforms.add(platform)
+
 
 def build_level(level):
-    pass # TODO build level with random gaps and height variations
-
-
-class Level01(Level):
-    def __init__(self, player):
-        Level.__init__(self, player)
-
-        level = [[0, 500],
-                 [210, 500],
-                 [500, 500]]
-
-        for arr in level:
-            platform = Platform()
-            platform.rect.x = arr[0]
-            platform.rect.y = arr[1]
-            platform.player = self.player
-            self.platforms.add(platform)
+    # TODO build level with random gaps and height variations
+    # but for right now we'll just place two platforms and a gap, 10 times
+    i = 0
+    while i < 30:
+        level.add_platform(i * PLATFORM_WIDTH, 500)
+        level.add_platform((i + 1) * PLATFORM_WIDTH, 500)
+        i += 3
+    level.limit = -5000
 
 
 def main():
@@ -206,11 +242,9 @@ def main():
 
     player = Player()
 
-    # TODO do away with these Levels, we'll just have one Level that ends after... a while
-    levels = [Level01(player)]
-
-    current_level = 0
-    player.level = levels[current_level]
+    level = Level(player)
+    player.level = level
+    build_level(level)
 
     sprites = sprite.Group()
 
@@ -234,50 +268,49 @@ def main():
 
     done = False
     gameover = None
+    nirvana = None
 
     while not done:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 done = True
             if event.type == pygame.KEYUP:
-                gameover = None
-                # TODO create a new level, restart the users position
+                if gameover is not None or nirvana is not None:
+                    exit(0)
 
         sprites.update()
 
-        levels[current_level].update()
+        level.update()
 
         # scroll right
         if player.rect.right >= SCROLL_RIGHT:
             diff = player.rect.right - SCROLL_RIGHT
             player.rect.right = SCROLL_RIGHT
-            levels[current_level].scroll_world(-diff)
+            level.scroll_world(-diff)
 
         # scroll left
         if player.rect.left <= SCROLL_LEFT:
             diff = SCROLL_LEFT - player.rect.left
             player.rect.left = SCROLL_LEFT
-            levels[current_level].scroll_world(diff)
+            level.scroll_world(diff)
 
-        # TODO if player hits ground, game over
-        # TODO add a restart button in the middle, with the text
         if player.rect.y + player.rect.height == SCREEN_HEIGHT:
-            if gameover is None:
+            if gameover is None and nirvana is None:
                 gameover = gameover_surface()
 
-        # go to next level if end of level is reached
-        # TODO get rid of this, if the end is reached then the player reached nirvana
-        position = player.rect.x + levels[current_level].scroll
-        if position < levels[current_level].limit:
+        position = player.rect.x + level.scroll
+        if position < level.limit:
             player.rect.x = SCROLL_LEFT
-            if current_level < len(levels) - 1:
-                current_level += 1
-                player.level = levels[current_level]
+            if nirvana is None and gameover is None:
+                nirvana = nirvana_surface()
 
         # render
         screen.blit(background, (0, 0))
-        levels[current_level].draw(screen)
+        level.draw(screen)
         sprites.draw(screen)
+        if nirvana is not None:
+            screen.blit(nirvana, ((screen.get_width() - nirvana.get_width()) / 2,
+                                  (screen.get_height() - nirvana.get_height()) / 2))
         if gameover is not None:
             screen.blit(gameover,
                         ((screen.get_width() - gameover.get_width()) / 2,
