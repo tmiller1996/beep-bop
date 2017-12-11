@@ -48,7 +48,7 @@ if __name__ == '__main__':
         if any(sd.query_devices()):
             print(sd.query_devices())
         else:
-            print('None listed')
+            print('No devices found')
         parser.exit(0)
     else:
-        print('nothing to do')
+        parser.print_help()
