@@ -195,6 +195,8 @@ class Level01(Level):
 def main():
     pygame.init()
 
+    random.seed()
+
     size = [SCREEN_WIDTH, SCREEN_HEIGHT]
     screen = display.set_mode(size)
 
@@ -260,7 +262,8 @@ def main():
         # TODO if player hits ground, game over
         # TODO add a restart button in the middle, with the text
         if player.rect.y + player.rect.height == SCREEN_HEIGHT:
-            gameover = gameover_surface()
+            if gameover is None:
+                gameover = gameover_surface()
 
         # go to next level if end of level is reached
         # TODO get rid of this, if the end is reached then the player reached nirvana
