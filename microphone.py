@@ -1,6 +1,8 @@
+#!/usr/bin/env python3
 import threading
 import numpy as np
 import sounddevice as sd
+import argparse
 
 
 class Microphone(threading.Thread):
@@ -35,3 +37,15 @@ class Microphone(threading.Thread):
                             blocksize = self.blocksize, samplerate = self.samplerate):
             while True:
                 pass
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('-l', '--list-devices',
+                        action='store_true', help='show list of audio devices and exit')
+    args = parser.parse_args()
+    if args.list_devices:
+        print(sd.query_devices())
+        parser.exit(0)
+    else:
+        print('nothing to do')
