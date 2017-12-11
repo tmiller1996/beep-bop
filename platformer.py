@@ -203,18 +203,16 @@ def main():
 
     clock = pygame.time.Clock()
 
-    last_data = float(sys.float_info.max)
+    last_volume = float(sys.float_info.max)
 
-    def callback(data):
-        nonlocal last_data
-        if isinstance(data, str):
-            print(data)
-        else:
-            if data > last_data * VOICE_CONSTANT:
-                player.scream()
-            last_data = data
+    def mic_callback(volume, pitch):
+        nonlocal last_volume
+        if volume > last_volume * VOICE_CONSTANT:
+            player.scream()
+        last_volume = volume
 
-    mic = microphone.Microphone(callback)
+    mic = microphone.Microphone()
+    mic.add_callback(mic_callback)
     mic.start()
 
     while not done:
