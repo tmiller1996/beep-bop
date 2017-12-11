@@ -231,7 +231,7 @@ def build_level(level: Level) -> None:
         level.add_platform(i * PLATFORM_WIDTH, 500)
         level.add_platform((i + 1) * PLATFORM_WIDTH, 500)
         i += 3
-    level.limit = -5000
+    level.limit = -2500
 
 
 def main() -> None:
